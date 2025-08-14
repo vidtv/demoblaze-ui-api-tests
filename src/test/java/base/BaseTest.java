@@ -20,7 +20,7 @@ public abstract class BaseTest {
         playwright = Playwright.create();
         browser = playwright.chromium().launch(
                 new BrowserType.LaunchOptions()
-                        .setHeadless(false)
+                        .setHeadless(true)
                         .setArgs(List.of("--no-sandbox", "--disable-extensions", "--disable-gpu"))
         );
     }

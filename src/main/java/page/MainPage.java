@@ -13,6 +13,10 @@ public class MainPage {
     public final LoginModal loginModal;
     public final SignUpModal signUpModal;
 
+    // Error alert messages
+    public static final String WRONG_PASSWORD_ERROR = "Wrong password.";
+    public static final String USER_DOES_NOT_EXISTS_ERROR = "User does not exist.";
+
     public MainPage(Page page) {
         this.page = page;
 
