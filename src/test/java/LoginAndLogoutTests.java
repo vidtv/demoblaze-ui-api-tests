@@ -18,9 +18,9 @@ import static utils.Constants.USERNAME;
 public class LoginAndLogoutTests extends BaseTest {
 
     @Test
-    @DisplayName("Login with valid credentials")
+    @DisplayName("Login with valid credentials and user logout")
     @Description("Verify successful login with valid credentials")
-    public void successfulLoginTest() {
+    public void successfulLoginAndLogoutTest() {
         step("1. Open the main page, click 'Log in' button and verify that login modal window is opened",
                 this::openLoginModalWindow
         );
@@ -30,6 +30,14 @@ public class LoginAndLogoutTests extends BaseTest {
             mainPage.loginModal.login(USERNAME, PASSWORD);
 
             assertThat(mainPage.getUsername()).hasText("Welcome " + USERNAME);
+        });
+
+        step("3. Click 'Log out' button and verify that 'Log in' button is displayed " +
+                "and username is not displayed in the header", () -> {
+            mainPage.getLogoutButton().click();
+
+            assertThat(mainPage.getLoginButton()).isVisible();
+            assertThat(mainPage.getUsername()).isHidden();
         });
     }
 
@@ -67,11 +75,6 @@ public class LoginAndLogoutTests extends BaseTest {
 
             assertThat(mainPage.getUsername()).isHidden();
         });
-    }
-
-    // TBD
-    public void logoutTest() {
-
     }
 
     @Step
