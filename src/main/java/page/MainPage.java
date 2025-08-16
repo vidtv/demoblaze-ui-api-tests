@@ -5,6 +5,8 @@ import com.microsoft.playwright.Page;
 import page.modal.LoginModal;
 import page.modal.SignUpModal;
 
+import java.util.List;
+
 import static utils.Constants.BASE_URL;
 
 /**
@@ -22,6 +24,11 @@ public class MainPage {
     // Error alert messages
     public static final String WRONG_PASSWORD_ERROR = "Wrong password.";
     public static final String USER_DOES_NOT_EXISTS_ERROR = "User does not exist.";
+
+    // Product categories
+    public static final String PHONES_CATEGORY = "Phones";
+    public static final String LAPTOPS_CATEGORY = "Laptops";
+    public static final String MONITORS_CATEGORY = "Monitors";
 
     public MainPage(Page page) {
         this.page = page;
@@ -68,5 +75,24 @@ public class MainPage {
      */
     public Locator getLogoutButton() {
         return page.locator("#logout2");
+    }
+
+    /**
+     * Get a product category according to its name.
+     *
+     * @param  categoryName a name of product category
+     * @return locator for a product category
+     */
+    public Locator getCategory(String categoryName) {
+        return page.locator("#itemc").getByText(categoryName);
+    }
+
+    /**
+     * Get a list of all displayed products names.
+     *
+     * @return a list of all displayed products names
+     */
+    public List<String> getDisplayedItemNames() {
+        return page.locator(".hrefch").allTextContents();
     }
 }
