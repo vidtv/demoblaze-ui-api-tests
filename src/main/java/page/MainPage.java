@@ -78,6 +78,26 @@ public class MainPage {
     }
 
     /**
+     * Get a locator for 'Previous' button.
+     * Used to open a previous page of a products list.
+     *
+     * @return locator for 'Previous' button
+     */
+    public Locator getPreviousPageButton() {
+        return page.locator("#prev2");
+    }
+
+    /**
+     * Get a locator for 'Next' button.
+     * Used to open a next page of a products list.
+     *
+     * @return locator for 'Next' button
+     */
+    public Locator getNextPageButton() {
+        return page.locator("#next2");
+    }
+
+    /**
      * Get a product category according to its name.
      *
      * @param  categoryName a name of product category

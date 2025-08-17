@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertLinesMatch;
 import static page.MainPage.*;
 
 @Epic("Demoblaze")
-@Story("UI Categories")
+@Feature("Product Catalog")
 public class ProductCategoriesTest extends BaseTest {
 
     // Test data
