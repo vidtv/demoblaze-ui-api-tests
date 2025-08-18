@@ -107,6 +107,13 @@ public class MainPage {
         return page.locator("#itemc").getByText(categoryName);
     }
 
+    public List<ProductCardItem> getAllDisplayedItems() {
+        return page.locator("#tbodyid > div").all()
+                .stream()
+                .map(ProductCardItem::new)
+                .toList();
+    }
+
     /**
      * Get a list of all displayed products names.
      *
