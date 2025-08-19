@@ -55,6 +55,10 @@ public class MainPage {
         return page.locator("#login2");
     }
 
+    public Locator getCartButton() {
+        return page.locator("#cartur");
+    }
+
     /**
      * Get a locator for a username of a logged-in user.
      * <p>

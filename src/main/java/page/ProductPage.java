@@ -10,6 +10,9 @@ public class ProductPage {
         this.page = page;
     }
 
+    // Alert messages
+    public static final String PRODUCT_ADDED_ALERT_MESSAGE = "Product added";
+
     public Locator getProductName() {
         return page.locator("#tbodyid h2");
     }
@@ -20,5 +23,9 @@ public class ProductPage {
 
     public Locator getProductDescription() {
         return page.locator("#more-information > p");
+    }
+
+    public Locator getAddToCartButton() {
+        return page.getByText("Add to cart");
     }
 }
