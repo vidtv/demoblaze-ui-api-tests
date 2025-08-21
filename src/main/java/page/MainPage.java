@@ -55,10 +55,6 @@ public class MainPage {
         return page.locator("#login2");
     }
 
-    public Locator getCartButton() {
-        return page.locator("#cartur");
-    }
-
     /**
      * Get a locator for a username of a logged-in user.
      * <p>
@@ -116,6 +112,14 @@ public class MainPage {
                 .stream()
                 .map(ProductCardItem::new)
                 .toList();
+    }
+
+    public void selectProductByName(String productName) {
+        getAllDisplayedItems()
+                .stream()
+                .filter(product -> product.getProductItemName().textContent().equals(productName))
+                .findFirst()
+                .ifPresent(product -> product.getProductItemName().click());
     }
 
     /**

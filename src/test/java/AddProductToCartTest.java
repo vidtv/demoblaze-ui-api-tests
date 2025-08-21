@@ -56,11 +56,11 @@ public class AddProductToCartTest extends BaseTest {
 
         step("3. Open the cart page and check that the product name and price are the same " +
                 "as in the product card item", () -> {
-            mainPage.getCartButton().click();
+            cartPage.navigate();
 
-            assertThat(cartPage.getProductName()).hasText(cardItemName);
+            assertThat(cartPage.getAllCartItems().get(0).getName()).hasText(cardItemName);
             // the price in cart is displayed without a currency sign for some reason
-            assertThat(cartPage.getProductPrice()).hasText(cardItemPrice.replace("$", ""));
+            assertEquals(cartPage.getAllCartItems().get(0).getPrice(), cardItemPrice.replace("$", ""));
         });
     }
 }
