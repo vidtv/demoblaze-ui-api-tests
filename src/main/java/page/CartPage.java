@@ -2,6 +2,7 @@ package page;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import page.modal.PlaceOrderModal;
 
 import java.util.List;
 
@@ -16,8 +17,16 @@ import static utils.Constants.BASE_URL;
 public class CartPage {
     private final Page page;
 
+    // Messages
+    public static final String THANK_YOU_FOR_YOUR_PURCHASE = "Thank you for your purchase!";
+
+    // Modal windows
+    public final PlaceOrderModal placeOrderModal;
+
     public CartPage(Page page) {
         this.page = page;
+
+        this.placeOrderModal = new PlaceOrderModal(page);
     }
 
     /**
@@ -50,5 +59,21 @@ public class CartPage {
                 .stream()
                 .map(CartItem::new)
                 .toList();
+    }
+
+    public Locator getPlaceOrderButton() {
+        return page.locator("[data-target='#orderModal']");
+    }
+
+    public Locator getPurchaseCompleteAlert() {
+        return page.locator(".sweet-alert");
+    }
+
+    public Locator getSuccessfulPurchaseCompleteIcon() {
+        return page.locator(".sa-icon.sa-success");
+    }
+
+    public Locator getPurchaseCompleteMessage() {
+        return page.locator(".sweet-alert h2");
     }
 }

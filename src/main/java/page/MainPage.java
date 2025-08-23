@@ -114,6 +114,14 @@ public class MainPage {
                 .toList();
     }
 
+    public ProductCardItem getProductByName(String productName) {
+        return getAllDisplayedItems()
+                .stream()
+                .filter(product -> product.getProductItemName().textContent().equals(productName))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Product with name '" + productName + "' not found"));
+    }
+
     public void selectProductByName(String productName) {
         getAllDisplayedItems()
                 .stream()
