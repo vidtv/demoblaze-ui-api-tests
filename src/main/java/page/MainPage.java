@@ -42,6 +42,9 @@ public class MainPage {
      */
     public void navigate() {
         page.navigate(BASE_URL);
+
+        // Need to wait until a list of products is loaded
+        page.waitForCondition(() -> !getDisplayedItemNames().isEmpty());
     }
 
     /**
@@ -107,6 +110,12 @@ public class MainPage {
         return page.locator("#itemc").getByText(categoryName);
     }
 
+    /**
+     * Get a list of all displayed products on the main page.
+     * Each product is represented as a ProductCardItem object.
+     *
+     * @return a list of all displayed products on the main page
+     */
     public List<ProductCardItem> getAllDisplayedItems() {
         return page.locator("#tbodyid > div").all()
                 .stream()
@@ -114,6 +123,13 @@ public class MainPage {
                 .toList();
     }
 
+    /**
+     * Get a product by its name.
+     * If the product with the specified name is not found, a RuntimeException is thrown.
+     *
+     * @param productName the name of the product to find
+     * @return the ProductCardItem with the specified name
+     */
     public ProductCardItem getProductByName(String productName) {
         return getAllDisplayedItems()
                 .stream()
@@ -122,6 +138,13 @@ public class MainPage {
                 .orElseThrow(() -> new RuntimeException("Product with name '" + productName + "' not found"));
     }
 
+    /**
+     * Select a product by its name.
+     * If the product with the specified name is found, it clicks on the product to select it.
+     * If the product is not found, no action is taken.
+     *
+     * @param productName the name of the product to select
+     */
     public void selectProductByName(String productName) {
         getAllDisplayedItems()
                 .stream()
