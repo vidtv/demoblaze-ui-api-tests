@@ -20,6 +20,9 @@ public class CartPage {
     // Messages
     public static final String THANK_YOU_FOR_YOUR_PURCHASE = "Thank you for your purchase!";
 
+    // Alert messages
+    public static final String PLEASE_FILL_OUT_NAME_AND_CREDIT_CARD = "Please fill out Name and Creditcard.";
+
     // Modal windows
     public final PlaceOrderModal placeOrderModal;
 
