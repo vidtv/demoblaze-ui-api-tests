@@ -37,9 +37,10 @@ public class CartTests extends BaseTest {
     @DisplayName("Cart displays a single added product")
     @Description("Verify that the cart shows a single product added from product page and its name and price are matched")
     void singleProductInCartTest() {
-        step("1. Open the main application page and select '" + samsungPhoneName + "' product in the product list", () -> {
-            addProductToCartTestStep(samsungPhoneName);
-        });
+        step("1. Open the main application page, select '" + samsungPhoneName + "' product in the product list " +
+                "and add it to the cart on the product details page", () ->
+                addProductToCartTestStep(samsungPhoneName)
+        );
 
         step("2. Open the cart page and check that the product name and price are the same " +
                 "as in the product card item", () -> {
