@@ -19,7 +19,8 @@ public class MainPage {
     // Modal windows
     public final LoginModal loginModal;
     public final SignUpModal signUpModal;
-    public final ContactModal contactModal;
+    public final NewMessageModal newMessageModal;
+    public final AboutUsModal aboutUsModal;
 
     // Error alert messages
     public static final String WRONG_PASSWORD_ERROR = "Wrong password.";
@@ -35,7 +36,8 @@ public class MainPage {
 
         this.loginModal = new LoginModal(page);
         this.signUpModal = new SignUpModal(page);
-        this.contactModal = new ContactModal(page);
+        this.newMessageModal = new NewMessageModal(page);
+        this.aboutUsModal = new AboutUsModal(page);
     }
 
     /**
@@ -61,6 +63,10 @@ public class MainPage {
 
     public Locator getContactButton() {
         return page.locator("[data-target='#exampleModal']");
+    }
+
+    public Locator getAboutUsButton() {
+        return page.locator("[data-target='#videoModal']");
     }
 
     /**

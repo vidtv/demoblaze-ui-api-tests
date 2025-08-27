@@ -5,14 +5,14 @@ import com.microsoft.playwright.Page;
 
 import static com.microsoft.playwright.options.AriaRole.DIALOG;
 
-public class ContactModal extends ModalWindow {
-
-    public ContactModal(Page page) {
-        super(page);
-    }
+public class NewMessageModal extends ModalWindow {
 
     // Modal title
     public static final String CONTACT_MODAL_TITLE = "New message";
+
+    public NewMessageModal(Page page) {
+        super(page);
+    }
 
     public Locator getModalTitle() {
         return page.locator("#exampleModalLabel");
