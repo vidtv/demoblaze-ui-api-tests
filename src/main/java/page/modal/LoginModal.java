@@ -1,14 +1,20 @@
 package page.modal;
 
 import com.microsoft.playwright.Locator;
-import com.microsoft.playwright.Page;
 
 import static com.microsoft.playwright.options.AriaRole.BUTTON;
 
+/**
+ * Represents the 'Login' modal window of the application.
+ * <p>
+ * Provides methods to interact with the modal window elements
+ * (username and password input fields, 'Log in' button)
+ * and method to perform login action.
+ */
 public class LoginModal extends ModalWindow {
 
-    public LoginModal(Page page) {
-        super(page);
+    public LoginModal(Locator locator) {
+        super(locator);
     }
 
     /**
@@ -17,7 +23,7 @@ public class LoginModal extends ModalWindow {
      * @return locator for the login modal title
      */
     public Locator getLoginModalTitle() {
-        return page.locator("#logInModalLabel");
+        return modalLocator.locator("#logInModalLabel");
     }
 
     /**
@@ -28,8 +34,8 @@ public class LoginModal extends ModalWindow {
      * @param password the password to fill in
      */
     public void login(String username, String password) {
-        page.fill("#loginusername", username);
-        page.fill("#loginpassword", password);
-        page.getByRole(BUTTON).getByText("Log in").click();
+        modalLocator.locator("#loginusername").fill(username);
+        modalLocator.locator("#loginpassword").fill(password);
+        modalLocator.getByRole(BUTTON).getByText("Log in").click();
     }
 }
