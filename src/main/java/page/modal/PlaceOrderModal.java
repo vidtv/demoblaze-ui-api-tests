@@ -1,7 +1,6 @@
 package page.modal;
 
 import com.microsoft.playwright.Locator;
-import com.microsoft.playwright.Page;
 
 import static com.microsoft.playwright.options.AriaRole.BUTTON;
 
@@ -13,8 +12,9 @@ import static com.microsoft.playwright.options.AriaRole.BUTTON;
  * and method of population required checkout fields.
  */
 public class PlaceOrderModal extends ModalWindow {
-    public PlaceOrderModal(Page page) {
-        super(page);
+
+    public PlaceOrderModal(Locator locator) {
+        super(locator);
     }
 
     /**
@@ -23,7 +23,7 @@ public class PlaceOrderModal extends ModalWindow {
      * @return locator for the 'Name' input field
      */
     public Locator getNameInput() {
-        return page.locator("#name");
+        return modalLocator.locator("#name");
     }
 
     /**
@@ -32,7 +32,7 @@ public class PlaceOrderModal extends ModalWindow {
      * @return locator for the 'Credit Card' input field
      */
     public Locator getCreditCardInput() {
-        return page.locator("#card");
+        return modalLocator.locator("#card");
     }
 
     /**
@@ -41,7 +41,7 @@ public class PlaceOrderModal extends ModalWindow {
      * @return locator for the 'Purchase' button
      */
     public Locator getPurchaseButton() {
-        return page.getByRole(BUTTON).getByText("Purchase");
+        return modalLocator.getByRole(BUTTON).getByText("Purchase");
     }
 
     /**
@@ -52,9 +52,9 @@ public class PlaceOrderModal extends ModalWindow {
      * then clicks the 'Purchase' button to submit the form.
      */
     public void populateOrderForm() {
-        page.locator("#name").fill("TestName");
-        page.locator("#card").fill("1111222233334444");
+        modalLocator.locator("#name").fill("TestName");
+        modalLocator.locator("#card").fill("1111222233334444");
 
-        page.getByRole(BUTTON).getByText("Purchase").click();
+        modalLocator.getByRole(BUTTON).getByText("Purchase").click();
     }
 }

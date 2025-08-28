@@ -29,7 +29,7 @@ public class CartPage {
     public CartPage(Page page) {
         this.page = page;
 
-        this.placeOrderModal = new PlaceOrderModal(page);
+        this.placeOrderModal = new PlaceOrderModal(page.locator("#orderModal"));
     }
 
     /**
@@ -57,6 +57,11 @@ public class CartPage {
         return page.locator("#totalp");
     }
 
+    /**
+     * Get a list of all cart items currently in the cart.
+     *
+     * @return list of all cart items
+     */
     public List<CartItem> getAllCartItems() {
         return page.locator(".success").all()
                 .stream()
@@ -64,18 +69,38 @@ public class CartPage {
                 .toList();
     }
 
+    /**
+     * Get a locator for the 'Place Order' button.
+     *
+     * @return locator for the 'Place Order' button
+     */
     public Locator getPlaceOrderButton() {
         return page.locator("[data-target='#orderModal']");
     }
 
+    /**
+     * Get a locator for the alert that appears after completing a purchase.
+     *
+     * @return locator for the purchase complete alert
+     */
     public Locator getPurchaseCompleteAlert() {
         return page.locator(".sweet-alert");
     }
 
+    /**
+     * Get a locator for the success icon in the purchase complete alert.
+     *
+     * @return locator for the success icon
+     */
     public Locator getSuccessfulPurchaseCompleteIcon() {
         return page.locator(".sa-icon.sa-success");
     }
 
+    /**
+     * Get a locator for the purchase complete message in the alert.
+     *
+     * @return locator for the purchase complete message
+     */
     public Locator getPurchaseCompleteMessage() {
         return page.locator(".sweet-alert h2");
     }

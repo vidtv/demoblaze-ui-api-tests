@@ -1,40 +1,46 @@
 package page.modal;
 
 import com.microsoft.playwright.Locator;
-import com.microsoft.playwright.Page;
 
-import static com.microsoft.playwright.options.AriaRole.DIALOG;
-
+/**
+ * 'New message' modal window.
+ * Opens after clicking 'Contact' button in header.
+ * </br>
+ * Contains input fields for contact email, name, and message.
+ */
 public class NewMessageModal extends ModalWindow {
 
     // Modal title
     public static final String CONTACT_MODAL_TITLE = "New message";
 
-    public NewMessageModal(Page page) {
-        super(page);
+    public NewMessageModal(Locator locator) {
+        super(locator);
     }
 
-    public Locator getModalTitle() {
-        return page.locator("#exampleModalLabel");
-    }
-
-    public Locator getHeaderCloseButton() {
-        return page.getByRole(DIALOG, new Page.GetByRoleOptions().setName(CONTACT_MODAL_TITLE)).getByLabel("Close");
-    }
-
+    /**
+     * Get a locator for the contact email input field.
+     *
+     * @return locator for the contact email input field
+     */
     public Locator getContactEmailInput() {
-        return page.getByLabel("Contact Email:");
+        return modalLocator.getByLabel("Contact Email:");
     }
 
+    /**
+     * Get a locator for the contact name input field.
+     *
+     * @return locator for the contact name input field
+     */
     public Locator getContactNameInput() {
-        return page.getByLabel("Contact Name:");
+        return modalLocator.getByLabel("Contact Name:");
     }
 
+    /**
+     * Get a locator for the message input field.
+     *
+     * @return locator for the message input field
+     */
     public Locator getContactMessage() {
-        return page.getByLabel("Message:");
-    }
-
-    public Locator getCloseButton() {
-        return page.getByLabel(CONTACT_MODAL_TITLE).getByText("Close");
+        return modalLocator.getByLabel("Message:");
     }
 }

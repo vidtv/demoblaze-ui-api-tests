@@ -1,30 +1,28 @@
 package page.modal;
 
 import com.microsoft.playwright.Locator;
-import com.microsoft.playwright.Page;
 
+/**
+ * 'About us' modal window.
+ * Opens after clicking 'About us' button in header.
+ * </br>
+ * Contains a video element with a video about the shop.
+ */
 public class AboutUsModal extends ModalWindow {
 
     // Modal title
     public static final String ABOUT_US_MODAL_TITLE = "About us";
 
-    public AboutUsModal(Page page) {
-        super(page);
+    public AboutUsModal(Locator locator) {
+        super(locator);
     }
 
-    public Locator getModalTitle() {
-        return page.locator("#videoModalLabel");
-    }
-
-    public Locator getHeaderCloseButton() {
-        return page.locator("#videoModal").getByLabel("Close");
-    }
-
+    /**
+     * Get a video element inside the modal window.
+     *
+     * @return locator for the video element
+     */
     public Locator getAboutUsVideo() {
-        return page.locator("video.vjs-tech");
-    }
-
-    public Locator getCloseButton() {
-        return page.locator("#videoModal").getByText("Close", new Locator.GetByTextOptions().setExact(true));
+        return modalLocator.locator("video.vjs-tech");
     }
 }

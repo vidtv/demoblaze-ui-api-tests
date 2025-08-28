@@ -11,14 +11,14 @@ import static utils.Constants.BASE_URL;
 /**
  * Represents the main page of the application.
  * <p>
- * Provides methods to interact with the main page elements (username, login/logout buttons).
+ * Provides methods to interact with the main page elements
+ * (such as login, logout, product selection, and navigation buttons)
  */
 public class MainPage {
     private final Page page;
 
     // Modal windows
     public final LoginModal loginModal;
-    public final SignUpModal signUpModal;
     public final NewMessageModal newMessageModal;
     public final AboutUsModal aboutUsModal;
 
@@ -34,10 +34,9 @@ public class MainPage {
     public MainPage(Page page) {
         this.page = page;
 
-        this.loginModal = new LoginModal(page);
-        this.signUpModal = new SignUpModal(page);
-        this.newMessageModal = new NewMessageModal(page);
-        this.aboutUsModal = new AboutUsModal(page);
+        this.loginModal = new LoginModal(page.locator("#logInModal"));
+        this.newMessageModal = new NewMessageModal(page.locator("#exampleModal"));
+        this.aboutUsModal = new AboutUsModal(page.locator("#videoModal"));
     }
 
     /**
@@ -61,10 +60,20 @@ public class MainPage {
         return page.locator("#login2");
     }
 
+    /**
+     * Get a locator for the 'Contact' button.
+     *
+     * @return locator for the 'Contact' button.
+     */
     public Locator getContactButton() {
         return page.locator("[data-target='#exampleModal']");
     }
 
+    /**
+     * Get a locator for the 'About us' button.
+     *
+     * @return locator for the 'About us' button.
+     */
     public Locator getAboutUsButton() {
         return page.locator("[data-target='#videoModal']");
     }
