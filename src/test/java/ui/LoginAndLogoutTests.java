@@ -1,3 +1,5 @@
+package ui;
+
 import base.BaseTest;
 import io.qameta.allure.*;
 import org.junit.jupiter.api.DisplayName;

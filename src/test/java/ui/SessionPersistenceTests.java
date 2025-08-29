@@ -1,3 +1,5 @@
+package ui;
+
 import base.BaseTest;
 import com.microsoft.playwright.Dialog;
 import io.qameta.allure.*;
