@@ -21,6 +21,7 @@ public class MainPage {
     public final LoginModal loginModal;
     public final NewMessageModal newMessageModal;
     public final AboutUsModal aboutUsModal;
+    public final SignUpModal signUpModal;
 
     // Error alert messages
     public static final String WRONG_PASSWORD_ERROR = "Wrong password.";
@@ -37,6 +38,7 @@ public class MainPage {
         this.loginModal = new LoginModal(page.locator("#logInModal"));
         this.newMessageModal = new NewMessageModal(page.locator("#exampleModal"));
         this.aboutUsModal = new AboutUsModal(page.locator("#videoModal"));
+        this.signUpModal = new SignUpModal(page.locator("#signInModal"));
     }
 
     /**
@@ -47,6 +49,10 @@ public class MainPage {
 
         // Need to wait until a list of products is loaded
         page.waitForCondition(() -> !getDisplayedItemNames().isEmpty());
+    }
+
+    public Locator getSignUpButton() {
+        return page.locator("#signin2");
     }
 
     /**
