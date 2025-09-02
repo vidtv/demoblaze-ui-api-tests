@@ -3,6 +3,7 @@ package utils;
 public class Constants {
 
     public final static String BASE_URL = "https://www.demoblaze.com";
+    public static final String BASE_API_URL = "https://api.demoblaze.com";
 
     public final static String USERNAME = System.getenv("USERNAME") != null ?
             System.getenv("USERNAME") : "defaultUser";
