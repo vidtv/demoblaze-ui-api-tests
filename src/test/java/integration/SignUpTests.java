@@ -23,7 +23,7 @@ import static utils.Constants.*;
 
 @Epic("Demoblaze")
 @Feature("User Authentication and Registration")
-public class AuthIntegrationTests extends BaseTest {
+public class SignUpTests extends BaseTest {
     private String signUpRequestJsonBody;
     private String encodedPassword;
 
