@@ -21,10 +21,12 @@ public class MainPage {
     public final LoginModal loginModal;
     public final NewMessageModal newMessageModal;
     public final AboutUsModal aboutUsModal;
+    public final SignUpModal signUpModal;
 
     // Error alert messages
     public static final String WRONG_PASSWORD_ERROR = "Wrong password.";
     public static final String USER_DOES_NOT_EXISTS_ERROR = "User does not exist.";
+    public static final String USER_ALREADY_EXISTS = "This user already exist.";
 
     // Product categories
     public static final String PHONES_CATEGORY = "Phones";
@@ -37,6 +39,7 @@ public class MainPage {
         this.loginModal = new LoginModal(page.locator("#logInModal"));
         this.newMessageModal = new NewMessageModal(page.locator("#exampleModal"));
         this.aboutUsModal = new AboutUsModal(page.locator("#videoModal"));
+        this.signUpModal = new SignUpModal(page.locator("#signInModal"));
     }
 
     /**
@@ -47,6 +50,10 @@ public class MainPage {
 
         // Need to wait until a list of products is loaded
         page.waitForCondition(() -> !getDisplayedItemNames().isEmpty());
+    }
+
+    public Locator getSignUpButton() {
+        return page.locator("#signin2");
     }
 
     /**
