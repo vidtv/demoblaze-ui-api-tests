@@ -26,6 +26,7 @@ public class MainPage {
     // Error alert messages
     public static final String WRONG_PASSWORD_ERROR = "Wrong password.";
     public static final String USER_DOES_NOT_EXISTS_ERROR = "User does not exist.";
+    public static final String USER_ALREADY_EXISTS = "This user already exist.";
 
     // Product categories
     public static final String PHONES_CATEGORY = "Phones";

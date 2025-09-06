@@ -5,11 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.playwright.Dialog;
 import dto.LoginBody;
 import dto.SignUpBody;
-import io.qameta.allure.Epic;
-import io.qameta.allure.Feature;
+import io.qameta.allure.*;
 import org.json.JSONException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -19,20 +17,21 @@ import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static java.util.Base64.getEncoder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static page.MainPage.USER_ALREADY_EXISTS;
 import static page.modal.SignUpModal.SIGN_UP_MODAL_TITLE;
-import static utils.Constants.BASE_API_URL;
+import static utils.Constants.*;
 
 @Epic("Demoblaze")
 @Feature("User Authentication and Registration")
 public class AuthIntegrationTests extends BaseTest {
-    private String signUpRequestBody;
+    private String signUpRequestJsonBody;
     private String encodedPassword;
 
     @BeforeEach
     void setUpTest() {
         page.onRequest(request -> {
             if (request.url().contains("signup")) {
-                signUpRequestBody = request.postData();
+                signUpRequestJsonBody = request.postData();
             }
         });
 
@@ -41,6 +40,9 @@ public class AuthIntegrationTests extends BaseTest {
     }
 
     @Test
+    @DisplayName("Sign up new user via UI and login via API")
+    @Description("Verify that a new user can be registered via the UI " +
+            "and POST /login returns 200 in case of using newly created user credentials")
     void shouldCreateNewUserViaUiAndVerifyInApi() {
         var username = UUID.randomUUID() + "@playwright.com";
         var password = "testpass";
@@ -60,12 +62,12 @@ public class AuthIntegrationTests extends BaseTest {
 
         step("3. Verify that the request to 'signup' endpoint contains correct username and password", () -> {
             try {
-                var signUpBody = new ObjectMapper().readValue(signUpRequestBody, SignUpBody.class);
+                var signUpBody = new ObjectMapper().readValue(signUpRequestJsonBody, SignUpBody.class);
 
                 encodedPassword = getEncoder().encodeToString(password.getBytes(StandardCharsets.UTF_8));
 
-                assertEquals(signUpBody.username, username, "Sign up request contains proper username");
-                assertEquals(signUpBody.password, encodedPassword, "Sign up request contains Base64 encoded password");
+                assertEquals(username, signUpBody.username, "Sign up request contains proper username");
+                assertEquals(encodedPassword, signUpBody.password, "Sign up request contains Base64 encoded password");
             } catch (JSONException e) {
                 throw new RuntimeException("Something wrong with request JSON: " + e.getMessage());
             }
@@ -82,6 +84,27 @@ public class AuthIntegrationTests extends BaseTest {
                     .post(BASE_API_URL + "/login")
             .then()
                     .statusCode(200);
+        });
+    }
+
+    @Test
+    @DisplayName("Sign up existing user via UI")
+    @Description("Verify behavior when attempting to register a user with an existing username")
+    void signUpAttemptWithExistingUser() {
+        step("1. Open the main application page, click 'Sign up' button and check that modal window is opened", () -> {
+            mainPage.navigate();
+            mainPage.getSignUpButton().click();
+
+            assertThat(mainPage.signUpModal.getModalTitle()).hasText(SIGN_UP_MODAL_TITLE);
+        });
+
+        step("2. Populate username and password inputs with values of existing user, click 'Sign up' button " +
+                "and check error alert about existing user", () -> {
+            mainPage.signUpModal.getUsernameInput().fill(USERNAME);
+            mainPage.signUpModal.getPasswordInput().fill(PASSWORD);
+            mainPage.signUpModal.getSignUpButton().click();
+
+            page.onDialog(dialog -> assertEquals(USER_ALREADY_EXISTS, dialog.message()));
         });
     }
 }

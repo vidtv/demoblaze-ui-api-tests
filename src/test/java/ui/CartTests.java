@@ -51,7 +51,7 @@ public class CartTests extends BaseTest {
 
             assertThat(cartPage.getAllCartItems().get(0).getName()).hasText(samsungPhoneName);
             // the price in cart is displayed without a currency sign for some reason
-            assertEquals(cartPage.getAllCartItems().get(0).getPrice(), samsungPhonePrice);
+            assertEquals(samsungPhonePrice, cartPage.getAllCartItems().get(0).getPrice());
         });
     }
 
