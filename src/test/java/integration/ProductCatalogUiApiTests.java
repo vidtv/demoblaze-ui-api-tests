@@ -13,24 +13,20 @@ import java.util.List;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static page.MainPage.PHONES_CATEGORY;
 import static utils.Constants.BASE_API_URL;
 
 @Epic("Demoblaze")
 @Feature("Product Catalog")
 public class ProductCatalogUiApiTests extends BaseTest {
-    private List<String> displayedProductsList;
+    private List<String> apiProductsList;
+    private List<String> apiFilteredProductsList;
 
     @Test
     @DisplayName("Load product list via UI and API")
     @Description("Verify that the list of products displayed in the UI matches the list of products retrieved via the API")
     void loadProductListViaUIAndApiTest() {
-        step("1. Open the main page of the store and retrieve a list of all displayed products on the page", () -> {
-            mainPage.navigate();
-
-            displayedProductsList = mainPage.getDisplayedItemNames();
-        });
-
-        step("2. Retrieve a list of all displayed products via REST API and check that they are the same", () -> {
+        step("1. Retrieve a list of all displayed products via REST API", () -> {
             var entriesResponseBody = given()
                     .contentType(ContentType.JSON)
             .when()
@@ -43,12 +39,56 @@ public class ProductCatalogUiApiTests extends BaseTest {
 
             var entriesResponse = new ObjectMapper().readValue(entriesResponseBody, EntriesResponse.class);
 
-            var apiProductsList = entriesResponse.items
+            apiProductsList = entriesResponse.items
                     .stream()
                     .map(item -> item.title)
                     .toList();
+        });
 
-            assertEquals(displayedProductsList, apiProductsList);
+        step("2. Open the main page of the store and retrieve a list of all displayed products on the page " +
+                "and check that it's the same as the list retrieved via REST API", () -> {
+            mainPage.navigate();
+            var displayedProductsList = mainPage.getDisplayedItemNames();
+
+            assertEquals(apiProductsList, displayedProductsList);
+        });
+    }
+
+    @Test
+    @DisplayName("Filter products by category via REST API and UI")
+    @Description("Verify that product filtering by category (Phones, Laptops, Monitors) in UI matches the data from API")
+    void productsFiltrationByUiAndApi() {
+        step("1. Retrieve a filtered list by 'Phones' category via REST API", () -> {
+            var filteredByCategoryProductsResponseJson =
+                    given()
+                            .contentType(ContentType.JSON)
+                            .body("{\"cat\":\"phone\"}")
+                    .when()
+                            .post(BASE_API_URL + "/bycat")
+                    .then()
+                            .statusCode(200)
+                            .extract()
+                            .response()
+                            .asString();
+
+            var filteredProductResponse = new ObjectMapper().readValue(filteredByCategoryProductsResponseJson,
+                    EntriesResponse.class);
+
+            apiFilteredProductsList = filteredProductResponse.items
+                    .stream()
+                    .map(item -> item.title)
+                    .toList();
+        });
+
+        step("2. Open the main page of the store, filter products by 'Phones' category " +
+                "and verify that the filtered product is the same as the filtered products list retrieved via REST API", () -> {
+            mainPage.navigate();
+            mainPage.getCategory(PHONES_CATEGORY).click();
+            page.waitForCondition(() -> mainPage.getAllDisplayedItems().size() == apiFilteredProductsList.size());
+
+            var displayedPhonesList = mainPage.getDisplayedItemNames();
+
+            assertEquals(apiFilteredProductsList, displayedPhonesList);
         });
     }
 }
