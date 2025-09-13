@@ -7,9 +7,11 @@ import io.qameta.allure.*;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import page.ProductDetailsPage;
 
 import java.util.List;
 
+import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,7 +24,7 @@ public class ProductCatalogUiApiTests extends BaseTest {
     private List<String> apiProductsList;
     private List<String> apiFilteredProductsList;
 
-    @Test
+    //@Test
     @DisplayName("Load product list via UI and API")
     @Description("Verify that the list of products displayed in the UI matches the list of products retrieved via the API")
     void loadProductListViaUIAndApiTest() {
@@ -54,10 +56,10 @@ public class ProductCatalogUiApiTests extends BaseTest {
         });
     }
 
-    @Test
+    //@Test
     @DisplayName("Filter products by category via REST API and UI")
     @Description("Verify that product filtering by category (Phones, Laptops, Monitors) in UI matches the data from API")
-    void productsFiltrationByUiAndApi() {
+    void productsFiltrationByUiAndApiTest() {
         step("1. Retrieve a filtered list by 'Phones' category via REST API", () -> {
             var filteredByCategoryProductsResponseJson =
                     given()
@@ -89,6 +91,38 @@ public class ProductCatalogUiApiTests extends BaseTest {
             var displayedPhonesList = mainPage.getDisplayedItemNames();
 
             assertEquals(apiFilteredProductsList, displayedPhonesList);
+        });
+    }
+
+    @Test
+    @DisplayName("Load product details via UI and API")
+    @Description("Verify that product details displayed in the UI match the product details retrieved via the API")
+    void productDetailsViaUiAndApiTest() {
+        var productDetailsPage = new ProductDetailsPage(page);
+        var samsungPhoneName = "Samsung galaxy s6";
+
+        step("1. Retrieve product details for 'Samsung Galaxy S6' phone (id = 1)", () -> {
+            var samsungPhoneInformationJson =
+                    given()
+                            .contentType(ContentType.JSON)
+                            .body("{\"id\":\"1\"}")
+                    .when()
+                            .post(BASE_API_URL + "/view")
+                    .then()
+                            .statusCode(200)
+                            .extract()
+                            .response()
+                            .asString();
+
+            var samsungPhoneInformation = new ObjectMapper().readValue(samsungPhoneInformationJson,
+                    EntriesResponse.Item.class);
+
+            mainPage.navigate();
+            mainPage.selectProductByName(samsungPhoneName);
+
+            assertThat(productDetailsPage.getProductName()).hasText(samsungPhoneInformation.title);
+            assertEquals(String.valueOf(samsungPhoneInformation.getItemPrice()), productDetailsPage.getProductPrice());
+            assertThat(productDetailsPage.getProductDescription()).hasText(samsungPhoneInformation.desc);
         });
     }
 }

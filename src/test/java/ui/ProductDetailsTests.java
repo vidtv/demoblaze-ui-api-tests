@@ -41,7 +41,7 @@ public class ProductDetailsTests extends BaseTest {
             samsungPhoneCardItem.getProductItemName().click();
 
             assertThat(productDetailsPage.getProductName()).hasText(sonyPhoneName);
-            assertThat(productDetailsPage.getProductPrice()).containsText(sonyPhonePrice);
+            assertEquals(sonyPhonePrice, productDetailsPage.getProductPrice());
             // the product card item has a shortened description
             assertThat(productDetailsPage.getProductDescription()).containsText(samsungCardItemDescription);
         });

@@ -21,5 +21,15 @@ public class EntriesResponse {
         public String img;
         public double price;
         public String title;
+
+        /**
+         * Gets the item price as an integer.
+         * Used for comparison with UI where price is shown without decimals.
+         *
+         * @return the item price as an integer
+         */
+        public int getItemPrice() {
+            return (int) price;
+        }
     }
 }
