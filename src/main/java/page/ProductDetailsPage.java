@@ -33,8 +33,10 @@ public class ProductDetailsPage {
      *
      * @return locator for the product price element
      */
-    public Locator getProductPrice() {
-        return page.locator(".price-container");
+    public String getProductPrice() {
+        return page.locator(".price-container").textContent()
+                .replace("$", "")
+                .replace(" *includes tax", "");
     }
 
     /**
