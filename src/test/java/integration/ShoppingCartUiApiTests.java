@@ -7,6 +7,7 @@ import dto.ViewCartRequestBody;
 import io.qameta.allure.*;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.*;
+import page.CartPage;
 import page.ProductDetailsPage;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
@@ -25,6 +26,7 @@ public class ShoppingCartUiApiTests extends BaseTest {
 
     // Pages
     private ProductDetailsPage productDetailsPage;
+    private CartPage cartPage;
 
     // Test data
     private final String nexusPhoneName = "Nexus 6";
@@ -33,15 +35,17 @@ public class ShoppingCartUiApiTests extends BaseTest {
     @BeforeEach
     void setUpTest() {
         productDetailsPage = new ProductDetailsPage(page);
+        cartPage = new CartPage(page);
 
         // to handle alert messages that appear after adding a product to cart
         page.onDialog(Dialog::accept);
     }
 
     @Test
-    @DisplayName("Add product to cart via UI and verify via API")
-    @Description("Verify that a product added to the cart via the UI is present in the cart when retrieved via the API")
-    void addToCartViaApiAndCheckInUiTest() {
+    @DisplayName("Add product to cart via UI and delete it via API")
+    @Description("Verify that a product added to the cart via the UI is present in the cart when retrieved via the API " +
+            "and deleted via API properly")
+    void addToCartViaUiAndDeleteViaApiTest() {
         step("1. Open the main page of the shop and log in as a test user", () -> {
             mainPage.navigate();
             mainPage.getLoginButton().click();
@@ -92,6 +96,12 @@ public class ShoppingCartUiApiTests extends BaseTest {
                     .post(BASE_API_URL + "/deleteitem")
             .then()
                     .statusCode(200);
+        });
+
+        step("5. Open the cart and verify that it's empty", () -> {
+            cartPage.navigate();
+
+            assertEquals(0, cartPage.getAllCartItems().size());
         });
     }
 }
