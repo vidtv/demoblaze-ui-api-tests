@@ -21,6 +21,7 @@ import static utils.Constants.*;
 public class ShoppingCartUiApiTests extends BaseTest {
     private int addToCartStatusCode;
     private String cookie;
+    private String nexusPhoneCartId;
 
     // Pages
     private ProductDetailsPage productDetailsPage;
@@ -70,14 +71,27 @@ public class ShoppingCartUiApiTests extends BaseTest {
         step("3. Retrieve list of added products via REST API and check that it contains product with id = " + nexusPhoneId, () -> {
             var viewCartJsonBody = new ObjectMapper().writeValueAsString(new ViewCartRequestBody(cookie));
 
-            given()
+            nexusPhoneCartId = given()
                     .contentType(ContentType.JSON)
                     .body(viewCartJsonBody)
             .when()
                     .post(BASE_API_URL + "/viewcart")
             .then()
                     .statusCode(200)
-                    .body("Items[0].prod_id", equalTo(nexusPhoneId));
+                    .body("Items[0].prod_id", equalTo(nexusPhoneId))
+                    .extract()
+                    .jsonPath()
+                    .getString("Items[0].id");
+        });
+
+        step("4. Remove the added product from the cart via REST API", () -> {
+            given()
+                    .contentType(ContentType.JSON)
+                    .body("{\"id\":\"" + nexusPhoneCartId + "\"}")
+            .when()
+                    .post(BASE_API_URL + "/deleteitem")
+            .then()
+                    .statusCode(200);
         });
     }
 }
