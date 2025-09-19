@@ -3,6 +3,8 @@ package page;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 
+import static utils.Constants.BASE_URL;
+
 /**
  * Represents the product details page of the application.
  * <p>
@@ -14,6 +16,10 @@ public class ProductDetailsPage {
 
     public ProductDetailsPage(Page page) {
         this.page = page;
+    }
+
+    public void openProductDetailsPage(int productId) {
+        page.navigate(BASE_URL + "/prod.html?idp_=" + productId);
     }
 
     // Alert messages

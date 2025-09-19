@@ -4,11 +4,14 @@ import base.BaseTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.playwright.Dialog;
 import dto.ViewCartRequestBody;
+import dto.ViewCartResponseBody;
 import io.qameta.allure.*;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.*;
 import page.CartPage;
 import page.ProductDetailsPage;
+
+import java.util.List;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static io.qameta.allure.Allure.step;
@@ -29,8 +32,8 @@ public class ShoppingCartUiApiTests extends BaseTest {
     private CartPage cartPage;
 
     // Test data
-    private final String nexusPhoneName = "Nexus 6";
     private final int nexusPhoneId = 3;
+    private final List<Integer> productsIdList = List.of(nexusPhoneId, 2, 4);
 
     @BeforeEach
     void setUpTest() {
@@ -59,15 +62,13 @@ public class ShoppingCartUiApiTests extends BaseTest {
 
         step("2. Open product page for 'Nexus 6' product, add it to cart " +
                 "and check that /addtocart response has status code 200", () -> {
-            mainPage.selectProductByName(nexusPhoneName);
-
             page.onResponse(response -> {
                 if (response.url().contains("addtocart")) {
                     addToCartStatusCode = response.status();
                 }
             });
 
-            page.waitForResponse("**/addtocart", () -> productDetailsPage.getAddToCartButton().click());
+            addProductToCartTestStep(nexusPhoneId);
 
             assertEquals(200, addToCartStatusCode);
         });
@@ -103,5 +104,55 @@ public class ShoppingCartUiApiTests extends BaseTest {
 
             assertEquals(0, cartPage.getAllCartItems().size());
         });
+    }
+
+    @Test
+    void addMultipleProductsViaUiAndVerifyViaApi() {
+        step("1. Open the main page of the shop and log in as a test user", () -> {
+            mainPage.navigate();
+            mainPage.getLoginButton().click();
+
+            assertThat(mainPage.loginModal.getLoginModalTitle()).isVisible();
+            mainPage.loginModal.login(USERNAME, PASSWORD);
+
+            assertThat(mainPage.getUsername()).hasText("Welcome " + USERNAME);
+            cookie = page.context().cookies().get(1).value;
+        });
+
+        step("2. Open product details page for all of 'Nexus 6', 'Nokia lumia 1520' (id = 2) " +
+                "and 'Samsung galaxy s7' (id = 4) products and add each of them to the cart", () -> {
+            for (var productId : productsIdList) {
+                addProductToCartTestStep(productId);
+            }
+        });
+
+        step("3. Retrieve cart content via REST API and verify the response body contains the same", () -> {
+            var viewCartRequestBody = new ObjectMapper().writeValueAsString(new ViewCartRequestBody(cookie));
+
+            var viewCartResponseBody = given()
+                    .contentType(ContentType.JSON)
+                    .body(viewCartRequestBody)
+            .when()
+                    .post(BASE_API_URL + "/viewcart")
+            .then()
+                    .statusCode(200)
+                    .extract()
+                    .asString();
+
+            var viewCartResponse = new ObjectMapper().readValue(viewCartResponseBody, ViewCartResponseBody.class);
+
+            var viewCartProductIdList = viewCartResponse.items
+                    .stream()
+                    .map(item -> item.prod_id)
+                    .toList();
+
+            assertEquals(productsIdList, viewCartProductIdList, "Product Ids should be the same");
+        });
+    }
+
+    @Step
+    private void addProductToCartTestStep(int productId) {
+        productDetailsPage.openProductDetailsPage(productId);
+        page.waitForResponse("**/addtocart", () -> productDetailsPage.getAddToCartButton().click());
     }
 }
