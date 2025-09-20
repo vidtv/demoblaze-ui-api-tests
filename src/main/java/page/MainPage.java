@@ -6,7 +6,7 @@ import page.modal.*;
 
 import java.util.List;
 
-import static utils.Constants.BASE_URL;
+import static utils.Constants.*;
 
 /**
  * Represents the main page of the application.
@@ -187,5 +187,15 @@ public class MainPage {
      */
     public List<String> getDisplayedItemNames() {
         return page.locator(".hrefch").allTextContents();
+    }
+
+    /**
+     * Perform login action using predefined test user credentials.
+     * Waits until the username element is visible after login.
+     */
+    public void loginAsTestUser() {
+        getLoginButton().click();
+        loginModal.login(USERNAME, PASSWORD);
+        page.waitForCondition(() -> getUsername().isVisible());
     }
 }

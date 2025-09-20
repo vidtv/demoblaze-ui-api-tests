@@ -10,7 +10,6 @@ import page.ProductDetailsPage;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static io.qameta.allure.Allure.step;
-import static utils.Constants.PASSWORD;
 import static utils.Constants.USERNAME;
 
 @Epic("Demoblaze")
@@ -34,9 +33,9 @@ public class SessionPersistenceTests extends BaseTest {
     @DisplayName("Login state persists after page reload")
     @Description("Verify that user remains logged in after refreshing the page")
     void sessionPersistsAfterReloadTest() {
-        step("1. Open the main application page, log in using correct credentials " +
+        step("1. Open the main page of the shop, log in using correct credentials " +
                 "and verify that username is displayed in the header and 'Log in' button is hidden", () -> {
-            openLoginModalWindowAndLogin();
+            mainPage.loginAsTestUser();
 
             assertThat(mainPage.getUsername()).hasText("Welcome " + USERNAME);
             assertThat(mainPage.getLoginButton()).isHidden();
@@ -81,14 +80,6 @@ public class SessionPersistenceTests extends BaseTest {
             Assertions.assertThat(actualCartItemNames).containsExactlyInAnyOrder(samsungPhoneName, nokiaPhoneName);
             assertThat(cartPage.getTotalOrderSum()).hasText(initialTotalSum);
         });
-    }
-
-    @Step
-    private void openLoginModalWindowAndLogin() {
-        mainPage.navigate();
-        mainPage.getLoginButton().click();
-
-        mainPage.loginModal.login(USERNAME, PASSWORD);
     }
 
     @Step

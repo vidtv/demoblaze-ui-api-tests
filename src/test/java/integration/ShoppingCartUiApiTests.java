@@ -19,7 +19,7 @@ import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static utils.Constants.*;
+import static utils.Constants.BASE_API_URL;
 
 @Epic("Demoblaze")
 @Feature("Shopping Cart")
@@ -81,9 +81,7 @@ public class ShoppingCartUiApiTests extends BaseTest {
     void addToCartViaUiAndDeleteViaApiTest() {
         step("1. Open the main page of the shop and log in as a test user", () -> {
             mainPage.navigate();
-            mainPage.getLoginButton().click();
-            mainPage.loginModal.login(USERNAME, PASSWORD);
-            page.waitForCondition(() -> mainPage.getUsername().isVisible());
+            mainPage.loginAsTestUser();
         });
 
         step("2. Open product page for 'Nexus 6' product, add it to cart " +
@@ -133,9 +131,7 @@ public class ShoppingCartUiApiTests extends BaseTest {
     void addMultipleProductsViaUiAndVerifyViaApi() {
         step("1. Open the main page of the shop and log in as a test user", () -> {
             mainPage.navigate();
-            mainPage.getLoginButton().click();
-            mainPage.loginModal.login(USERNAME, PASSWORD);
-            page.waitForCondition(() -> mainPage.getUsername().isVisible());
+            mainPage.loginAsTestUser();
         });
 
         step("2. Open product details page for all of 'Nexus 6', 'Nokia lumia 1520' (id = 2) " +
@@ -157,9 +153,7 @@ public class ShoppingCartUiApiTests extends BaseTest {
     void cartPersistsAfterReloginTest() {
         step("1. Open the main page of the shop and log in as a test user", () -> {
             mainPage.navigate();
-            mainPage.getLoginButton().click();
-            mainPage.loginModal.login(USERNAME, PASSWORD);
-            page.waitForCondition(() -> mainPage.getUsername().isVisible());
+            mainPage.loginAsTestUser();
         });
 
         step("2. Open product details page for all of 'Nexus 6', 'Nokia lumia 1520' (id = 2) " +
@@ -175,10 +169,7 @@ public class ShoppingCartUiApiTests extends BaseTest {
         });
 
         step("4. Log in as a test user again and open the cart page", () -> {
-            // TODO Create a login method with clicking 'Login' button, populating inputs in login modal window and checking that username is displayed
-            mainPage.getLoginButton().click();
-            mainPage.loginModal.login(USERNAME, PASSWORD);
-            page.waitForCondition(() -> mainPage.getUsername().isVisible());
+            mainPage.loginAsTestUser();
         });
 
         step("5. Retrieve cart content for the current session via REST API and verify that API response " +
