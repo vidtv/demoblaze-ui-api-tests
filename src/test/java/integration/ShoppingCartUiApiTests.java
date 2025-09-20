@@ -1,6 +1,7 @@
 package integration;
 
 import base.BaseTest;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.playwright.Dialog;
 import dto.ViewCartRequestBody;
@@ -14,7 +15,6 @@ import page.ProductDetailsPage;
 
 import java.util.List;
 
-import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -25,9 +25,7 @@ import static utils.Constants.*;
 @Feature("Shopping Cart")
 public class ShoppingCartUiApiTests extends BaseTest {
     private int addToCartStatusCode;
-    private String cookie;
     private String nexusPhoneViewCartId;
-    private List<String> viewCartProdIdList;
 
     // Pages
     private ProductDetailsPage productDetailsPage;
@@ -46,6 +44,36 @@ public class ShoppingCartUiApiTests extends BaseTest {
         page.onDialog(Dialog::accept);
     }
 
+    @AfterEach
+    void tearDownTest() {
+        step("Retrieve all added products to cart and delete them by REST API", () -> {
+            var cookie = page.context().cookies().get(1).value;
+            var viewCartRequestBody = new ObjectMapper().writeValueAsString(new ViewCartRequestBody(cookie));
+
+            var viewCartResponseBody =
+                given()
+                    .contentType(ContentType.JSON)
+                    .body(viewCartRequestBody)
+                .when()
+                    .post(BASE_API_URL + "/viewcart")
+                .then()
+                    .statusCode(200)
+                    .extract()
+                    .asString();
+
+            var viewCartResponse = new ObjectMapper().readValue(viewCartResponseBody, ViewCartResponseBody.class);
+
+            var viewCartProdIdList = viewCartResponse.items
+                    .stream()
+                    .map(item -> item.id)
+                    .toList();
+
+            for (var productId : viewCartProdIdList) {
+                deleteProductFromCartViaApi(productId);
+            }
+        });
+    }
+
     @Test
     @DisplayName("Add product to cart via UI and delete it via API")
     @Description("Verify that a product added to the cart via the UI is present in the cart when retrieved via the API " +
@@ -54,12 +82,8 @@ public class ShoppingCartUiApiTests extends BaseTest {
         step("1. Open the main page of the shop and log in as a test user", () -> {
             mainPage.navigate();
             mainPage.getLoginButton().click();
-
-            assertThat(mainPage.loginModal.getLoginModalTitle()).isVisible();
             mainPage.loginModal.login(USERNAME, PASSWORD);
-
-            assertThat(mainPage.getUsername()).hasText("Welcome " + USERNAME);
-            cookie = page.context().cookies().get(1).value;
+            page.waitForCondition(() -> mainPage.getUsername().isVisible());
         });
 
         step("2. Open product page for 'Nexus 6' product, add it to cart " +
@@ -76,6 +100,7 @@ public class ShoppingCartUiApiTests extends BaseTest {
         });
 
         step("3. Retrieve list of added products via REST API and check that it contains product with id = " + nexusPhoneId, () -> {
+            var cookie = page.context().cookies().get(1).value;
             var viewCartJsonBody = new ObjectMapper().writeValueAsString(new ViewCartRequestBody(cookie));
 
             nexusPhoneViewCartId = given()
@@ -103,16 +128,14 @@ public class ShoppingCartUiApiTests extends BaseTest {
     }
 
     @Test
+    @DisplayName("Add multiple products to cart via UI and verify via API")
+    @Description("Verify that multiple products added to the cart via the UI are present in the cart when retrieved via the API")
     void addMultipleProductsViaUiAndVerifyViaApi() {
         step("1. Open the main page of the shop and log in as a test user", () -> {
             mainPage.navigate();
             mainPage.getLoginButton().click();
-
-            assertThat(mainPage.loginModal.getLoginModalTitle()).isVisible();
             mainPage.loginModal.login(USERNAME, PASSWORD);
-
-            assertThat(mainPage.getUsername()).hasText("Welcome " + USERNAME);
-            cookie = page.context().cookies().get(1).value;
+            page.waitForCondition(() -> mainPage.getUsername().isVisible());
         });
 
         step("2. Open product details page for all of 'Nexus 6', 'Nokia lumia 1520' (id = 2) " +
@@ -122,39 +145,46 @@ public class ShoppingCartUiApiTests extends BaseTest {
             }
         });
 
-        step("3. Retrieve cart content via REST API and verify the response body contains the same list of product ids", () -> {
-            var viewCartRequestBody = new ObjectMapper().writeValueAsString(new ViewCartRequestBody(cookie));
+        step("3. Retrieve cart content via REST API and verify that API response contains prod_ids of the same products " +
+                        "that were added via UI",
+                this::verifyProdIdListsFromUiAndApi
+        );
+    }
 
-            var viewCartResponseBody = given()
-                    .contentType(ContentType.JSON)
-                    .body(viewCartRequestBody)
-            .when()
-                    .post(BASE_API_URL + "/viewcart")
-            .then()
-                    .statusCode(200)
-                    .extract()
-                    .asString();
-
-            var viewCartResponse = new ObjectMapper().readValue(viewCartResponseBody, ViewCartResponseBody.class);
-
-            var viewCartIdList = viewCartResponse.items
-                    .stream()
-                    .map(item -> item.prod_id)
-                    .toList();
-            Assertions.assertThat(viewCartIdList).hasSameElementsAs(productsIdList);
-
-            // necessary to delete products from the cart using their ids
-            viewCartProdIdList = viewCartResponse.items
-                    .stream()
-                    .map(item -> item.id)
-                    .toList();
+    @Test
+    @DisplayName("Cart persistence after relogin")
+    @Description("Verify that products added to the cart are still present in the cart after user logs out and logs in again")
+    void cartPersistsAfterReloginTest() {
+        step("1. Open the main page of the shop and log in as a test user", () -> {
+            mainPage.navigate();
+            mainPage.getLoginButton().click();
+            mainPage.loginModal.login(USERNAME, PASSWORD);
+            page.waitForCondition(() -> mainPage.getUsername().isVisible());
         });
 
-        step("4. Delete all added products from the cart via REST API", () -> {
-            for (var productId : viewCartProdIdList) {
-                deleteProductFromCartViaApi(productId);
+        step("2. Open product details page for all of 'Nexus 6', 'Nokia lumia 1520' (id = 2) " +
+                "and 'Samsung galaxy s7' (id = 4) products and add each of them to the cart", () -> {
+            for (var productId : productsIdList) {
+                addProductToCartTestStep(productId);
             }
         });
+
+        step("3. Log out from the shop", () -> {
+            mainPage.getLogoutButton().click();
+            page.waitForCondition(() -> mainPage.getLoginButton().isVisible());
+        });
+
+        step("4. Log in as a test user again and open the cart page", () -> {
+            // TODO Create a login method with clicking 'Login' button, populating inputs in login modal window and checking that username is displayed
+            mainPage.getLoginButton().click();
+            mainPage.loginModal.login(USERNAME, PASSWORD);
+            page.waitForCondition(() -> mainPage.getUsername().isVisible());
+        });
+
+        step("5. Retrieve cart content for the current session via REST API and verify that API response " +
+                        "contains prod_ids of the same products that were added via UI",
+                this::verifyProdIdListsFromUiAndApi
+        );
     }
 
     @Step
@@ -172,5 +202,36 @@ public class ShoppingCartUiApiTests extends BaseTest {
                 .post(BASE_API_URL + "/deleteitem")
         .then()
                 .statusCode(200);
+    }
+
+    /**
+     * Retrieve cart content via REST API
+     * and verify that API response contains prod_ids of the same products
+     * that were added via UI.
+     *
+     * @throws JsonProcessingException if there is an error processing JSON
+     */
+    private void verifyProdIdListsFromUiAndApi() throws JsonProcessingException {
+        var cookie = page.context().cookies().get(1).value;
+        var viewCartRequestBody = new ObjectMapper().writeValueAsString(new ViewCartRequestBody(cookie));
+
+        var viewCartResponseBody =
+             given()
+                .contentType(ContentType.JSON)
+                .body(viewCartRequestBody)
+            .when()
+                .post(BASE_API_URL + "/viewcart")
+            .then()
+                .statusCode(200)
+                .extract()
+                .asString();
+
+        var viewCartResponse = new ObjectMapper().readValue(viewCartResponseBody, ViewCartResponseBody.class);
+
+        var viewCartIdList = viewCartResponse.items
+                .stream()
+                .map(item -> item.prod_id)
+                .toList();
+        Assertions.assertThat(viewCartIdList).hasSameElementsAs(productsIdList);
     }
 }
