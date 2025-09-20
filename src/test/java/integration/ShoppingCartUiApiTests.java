@@ -7,6 +7,7 @@ import dto.ViewCartRequestBody;
 import dto.ViewCartResponseBody;
 import io.qameta.allure.*;
 import io.restassured.http.ContentType;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import page.CartPage;
 import page.ProductDetailsPage;
@@ -25,7 +26,8 @@ import static utils.Constants.*;
 public class ShoppingCartUiApiTests extends BaseTest {
     private int addToCartStatusCode;
     private String cookie;
-    private String nexusPhoneCartId;
+    private String nexusPhoneViewCartId;
+    private List<String> viewCartProdIdList;
 
     // Pages
     private ProductDetailsPage productDetailsPage;
@@ -76,7 +78,7 @@ public class ShoppingCartUiApiTests extends BaseTest {
         step("3. Retrieve list of added products via REST API and check that it contains product with id = " + nexusPhoneId, () -> {
             var viewCartJsonBody = new ObjectMapper().writeValueAsString(new ViewCartRequestBody(cookie));
 
-            nexusPhoneCartId = given()
+            nexusPhoneViewCartId = given()
                     .contentType(ContentType.JSON)
                     .body(viewCartJsonBody)
             .when()
@@ -89,15 +91,9 @@ public class ShoppingCartUiApiTests extends BaseTest {
                     .getString("Items[0].id");
         });
 
-        step("4. Remove the added product from the cart via REST API", () -> {
-            given()
-                    .contentType(ContentType.JSON)
-                    .body("{\"id\":\"" + nexusPhoneCartId + "\"}")
-            .when()
-                    .post(BASE_API_URL + "/deleteitem")
-            .then()
-                    .statusCode(200);
-        });
+        step("4. Remove the added product from the cart via REST API", () ->
+                deleteProductFromCartViaApi(nexusPhoneViewCartId)
+        );
 
         step("5. Open the cart and verify that it's empty", () -> {
             cartPage.navigate();
@@ -126,7 +122,7 @@ public class ShoppingCartUiApiTests extends BaseTest {
             }
         });
 
-        step("3. Retrieve cart content via REST API and verify the response body contains the same", () -> {
+        step("3. Retrieve cart content via REST API and verify the response body contains the same list of product ids", () -> {
             var viewCartRequestBody = new ObjectMapper().writeValueAsString(new ViewCartRequestBody(cookie));
 
             var viewCartResponseBody = given()
@@ -141,12 +137,23 @@ public class ShoppingCartUiApiTests extends BaseTest {
 
             var viewCartResponse = new ObjectMapper().readValue(viewCartResponseBody, ViewCartResponseBody.class);
 
-            var viewCartProductIdList = viewCartResponse.items
+            var viewCartIdList = viewCartResponse.items
                     .stream()
                     .map(item -> item.prod_id)
                     .toList();
+            Assertions.assertThat(viewCartIdList).hasSameElementsAs(productsIdList);
 
-            assertEquals(productsIdList, viewCartProductIdList, "Product Ids should be the same");
+            // necessary to delete products from the cart using their ids
+            viewCartProdIdList = viewCartResponse.items
+                    .stream()
+                    .map(item -> item.id)
+                    .toList();
+        });
+
+        step("4. Delete all added products from the cart via REST API", () -> {
+            for (var productId : viewCartProdIdList) {
+                deleteProductFromCartViaApi(productId);
+            }
         });
     }
 
@@ -154,5 +161,16 @@ public class ShoppingCartUiApiTests extends BaseTest {
     private void addProductToCartTestStep(int productId) {
         productDetailsPage.openProductDetailsPage(productId);
         page.waitForResponse("**/addtocart", () -> productDetailsPage.getAddToCartButton().click());
+    }
+
+    @Step
+    private void deleteProductFromCartViaApi(String viewCartId) {
+        given()
+                .contentType(ContentType.JSON)
+                .body("{\"id\":\"" + viewCartId + "\"}")
+        .when()
+                .post(BASE_API_URL + "/deleteitem")
+        .then()
+                .statusCode(200);
     }
 }
