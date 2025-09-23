@@ -35,6 +35,7 @@ public class SessionPersistenceTests extends BaseTest {
     void sessionPersistsAfterReloadTest() {
         step("1. Open the main page of the shop, log in using correct credentials " +
                 "and verify that username is displayed in the header and 'Log in' button is hidden", () -> {
+            mainPage.navigate();
             mainPage.loginAsTestUser();
 
             assertThat(mainPage.getUsername()).hasText("Welcome " + USERNAME);
