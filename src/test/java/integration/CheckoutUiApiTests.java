@@ -1,8 +1,12 @@
 package integration;
 
 import base.BaseTest;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dto.ViewCartRequestBody;
+import dto.ViewCartResponseBody;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import page.CartPage;
@@ -11,7 +15,9 @@ import page.ProductDetailsPage;
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static com.microsoft.playwright.options.AriaRole.BUTTON;
 import static io.qameta.allure.Allure.step;
+import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static utils.Constants.BASE_API_URL;
 
 @Epic("Demoblaze")
 @Feature("Checkout")
@@ -64,6 +70,29 @@ public class CheckoutUiApiTests extends BaseTest {
             assertThat(cartPage.getPurchaseCompleteAlert()).isVisible();
 
             assertEquals(200, deleteCartStatusCode);
+        });
+
+        step("4. Check that /viewcart returns empty cart content", () -> {
+            var cookie = page.context().cookies().get(1).value;
+            var viewCartRequestBody = new ObjectMapper().writeValueAsString(new ViewCartRequestBody(cookie));
+
+            var viewCartResponseBody =
+                    given()
+                            .contentType(ContentType.JSON)
+                            .body(viewCartRequestBody)
+                            .when()
+                            .post(BASE_API_URL + "/viewcart")
+                            .then()
+                            .statusCode(200)
+                            .extract()
+                            .asString();
+
+            var viewCartResponse = new ObjectMapper().readValue(viewCartResponseBody, ViewCartResponseBody.class);
+
+            var viewCartItemsList = viewCartResponse.items
+                    .stream()
+                    .toList();
+            assertEquals(0, viewCartItemsList.size());
         });
     }
 }
