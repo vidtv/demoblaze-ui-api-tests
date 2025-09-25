@@ -4,11 +4,9 @@ import base.BaseTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dto.ViewCartRequestBody;
 import dto.ViewCartResponseBody;
-import io.qameta.allure.Epic;
-import io.qameta.allure.Feature;
+import io.qameta.allure.*;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import page.CartPage;
 import page.ProductDetailsPage;
 
@@ -30,6 +28,8 @@ public class CheckoutUiApiTests extends BaseTest {
 
     // Test data
     private final int nexusPhoneId = 3;
+    private final String purchaseName = "TestName";
+    private final String purchaseCardNumber = "1111222233334444";
 
     @BeforeEach
     void setUpTest() {
@@ -38,6 +38,8 @@ public class CheckoutUiApiTests extends BaseTest {
     }
 
     @Test
+    @DisplayName("Verify that cart is cleared after purchase")
+    @Description("Verify that after placing an order in the UI, the API request /deletecart is sent and the cart becomes empty")
     void cartIsClearedAfterPurchase() {
         step("1. Open the main page of the shop and log in as a test user", () -> {
             mainPage.navigate();
@@ -61,8 +63,8 @@ public class CheckoutUiApiTests extends BaseTest {
             });
 
             cartPage.getPlaceOrderButton().click();
-            cartPage.placeOrderModal.modalLocator.locator("#name").fill("TestName");
-            cartPage.placeOrderModal.modalLocator.locator("#card").fill("1111222233334444");
+            cartPage.placeOrderModal.modalLocator.locator("#name").fill(purchaseName);
+            cartPage.placeOrderModal.modalLocator.locator("#card").fill(purchaseCardNumber);
 
             page.waitForResponse("**/deletecart", () ->
                     cartPage.placeOrderModal.modalLocator.getByRole(BUTTON).getByText("Purchase").click()
