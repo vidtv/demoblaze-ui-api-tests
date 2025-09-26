@@ -9,7 +9,7 @@ import com.microsoft.playwright.Locator;
  * such as modal title and close buttons.
  */
 public abstract class ModalWindow {
-    protected Locator modalLocator;
+    public Locator modalLocator;
 
     /**
      * Constructor for ModalWindow.
