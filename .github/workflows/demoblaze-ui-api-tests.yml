@@ -28,3 +28,32 @@ jobs:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
         run: mvn test
+
+      - name: Generate Allure report
+        run: mvn -q allure:report
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Do not change artifact name unless you also change it in a deployment step
+          path: target/site/allure-maven-plugin
+          # artifact_name: github-pages   # default; you can omit
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        # If you changed artifact_name above, pass it here:
+        # with:
+        #   artifact_name: my-pages-artifact
+
+      - name: Add Pages URL to summary
+        run: |
+          echo "### ✅ Allure report is live" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
