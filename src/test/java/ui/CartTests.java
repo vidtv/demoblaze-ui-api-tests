@@ -41,7 +41,7 @@ public class CartTests extends BaseTest {
     void singleProductInCartTest() {
         step("1. Open the main application page, select '" + samsungPhoneName + "' product in the product list " +
                 "and add it to the cart on the product details page", () ->
-                addProductToCartTestStep(samsungPhoneName)
+                getProductPriceAndAddProductToCartTestStep(samsungPhoneName)
         );
 
         step("2. Open the cart page and check that the product name and price are the same " +
@@ -61,11 +61,11 @@ public class CartTests extends BaseTest {
     void multipleProductsInCartTest() {
         step("1. Open the main page, select '" + samsungPhoneName + "' product in the product list " +
                 "and add it to cart on the product details page", () ->
-                addProductToCartTestStep(samsungPhoneName)
+                getProductPriceAndAddProductToCartTestStep(samsungPhoneName)
         );
 
         step("2. Open the main page, select '" + nokiaPhoneName + "' and add it to the cart", () ->
-                addProductToCartTestStep(nokiaPhoneName)
+                getProductPriceAndAddProductToCartTestStep(nokiaPhoneName)
         );
 
         step("3. Open the cart page and check that both products are added to the cart " +
@@ -90,12 +90,12 @@ public class CartTests extends BaseTest {
     void removeProductFromCartTest() {
         step("1. Open the main application page, select " + samsungPhoneName + " product from the products list " +
                 "and add it to the cart", () -> {
-            addProductToCartTestStep(samsungPhoneName);
+            getProductPriceAndAddProductToCartTestStep(samsungPhoneName);
         });
 
         step("2. Open the main application page, select " + nokiaPhoneName + " product from the products list " +
                 "and add it to the cart", () -> {
-            addProductToCartTestStep(nokiaPhoneName);
+            getProductPriceAndAddProductToCartTestStep(nokiaPhoneName);
         });
 
         step("3. Open the cart page, click 'Delete' button for " + samsungPhoneName + " and check that cart item is no longer displayed " +
@@ -118,7 +118,7 @@ public class CartTests extends BaseTest {
     }
 
     @Step
-    private void addProductToCartTestStep(String productName) {
+    private void getProductPriceAndAddProductToCartTestStep(String productName) {
         mainPage.navigate();
 
         if (productName.equals(samsungPhoneName)) {
@@ -126,7 +126,7 @@ public class CartTests extends BaseTest {
         } else {
             nokiaPhonePrice = mainPage.getProductByName(nokiaPhoneName).getProductItemPrice();
         }
-        mainPage.selectProductByName(productName);
+        mainPage.getProductByName(productName).getProductItemName().click();
 
         page.waitForResponse("**/addtocart", () -> productDetailsPage.getAddToCartButton().click());
     }

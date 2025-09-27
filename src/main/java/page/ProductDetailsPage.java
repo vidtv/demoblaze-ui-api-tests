@@ -62,4 +62,14 @@ public class ProductDetailsPage {
     public Locator getAddToCartButton() {
         return page.getByText("Add to cart");
     }
+
+    /**
+     * Add a product to the cart by its ID.
+     *
+     * @param productId ID of the product to be added to the cart
+     */
+    public void addProductToCartTestStep(int productId) {
+        openProductDetailsPage(productId);
+        page.waitForResponse("**/addtocart", () -> getAddToCartButton().click());
+    }
 }

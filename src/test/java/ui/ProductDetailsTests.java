@@ -29,7 +29,7 @@ public class ProductDetailsTests extends BaseTest {
     @Test
     @DisplayName("Check product details from catalog")
     @Description("Verify that clicking on a product in the catalog opens a page with its product card")
-    void productsDetailsTest() {
+    void productsDetailsMatchProductCardTest() {
         step("1. Open the main page, select '" + sonyPhoneName + "' product in the product list " +
                 "and check that information on the product page is matched with information from the product card", () -> {
             mainPage.navigate();
@@ -51,7 +51,7 @@ public class ProductDetailsTests extends BaseTest {
     @DisplayName("Add product to cart from product details page")
     @Description("Verify that a product is added to cart by clicking 'Add to cart' button on the product details page")
     void addProductToCartFromProductDetailsPageTest() {
-        step("1. Open the main page, select '" + sonyPhoneName + "' product in the product list " +
+        step("1. Open the main page and select '" + sonyPhoneName + "' product in the product list " +
                 "and check that information on the product page is matched with information from the product card", () -> {
             mainPage.navigate();
             mainPage.getProductByName(sonyPhoneName).getProductItemName().click();

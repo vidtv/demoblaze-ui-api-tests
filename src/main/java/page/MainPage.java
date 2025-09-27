@@ -9,10 +9,10 @@ import java.util.List;
 import static utils.Constants.*;
 
 /**
- * Represents the main page of the application.
+ * Represents the main page of the online shop.
  * <p>
- * Provides methods to interact with the main page elements
- * (such as login, logout, product selection, and navigation buttons)
+ * Provides methods to interact with the main page elements (buttons, product categories, product items)
+ * and access to various modal windows (login, new message, about us, sign up).
  */
 public class MainPage {
     private final Page page;
@@ -166,21 +166,6 @@ public class MainPage {
     }
 
     /**
-     * Select a product by its name.
-     * If the product with the specified name is found, it clicks on the product to select it.
-     * If the product is not found, no action is taken.
-     *
-     * @param productName the name of the product to select
-     */
-    public void selectProductByName(String productName) {
-        getAllDisplayedItems()
-                .stream()
-                .filter(product -> product.getProductItemName().textContent().equals(productName))
-                .findFirst()
-                .ifPresent(product -> product.getProductItemName().click());
-    }
-
-    /**
      * Get a list of all displayed products names.
      *
      * @return a list of all displayed products names
@@ -197,5 +182,16 @@ public class MainPage {
         getLoginButton().click();
         loginModal.login(USERNAME, PASSWORD);
         page.waitForCondition(() -> getUsername().isVisible());
+    }
+
+    /**
+     * Open the main page, then open the login modal window
+     * by clicking the 'Log in' button on the main page
+     * and wait until the login modal title is visible.
+     */
+    public void openLoginModalWindow() {
+        navigate();
+        getLoginButton().click();
+        page.waitForCondition(() -> loginModal.getLoginModalTitle().isVisible());
     }
 }

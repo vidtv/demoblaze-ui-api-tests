@@ -1,5 +1,8 @@
 package dto;
 
+/**
+ * DTO class for /viewcart API endpoint request body.
+ */
 public class ViewCartRequestBody {
     public String cookie;
     public boolean flag;

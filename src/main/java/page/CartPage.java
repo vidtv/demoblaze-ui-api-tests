@@ -9,10 +9,11 @@ import java.util.List;
 import static utils.Constants.BASE_URL;
 
 /**
- * Represents cart page of the application.
+ * Cart page of the online shop.
  * <p>
  * Provides methods to interact with cart page elements
- * (added product data, 'Delete' and 'Place Order' buttons).
+ * (cart items, total order sum, 'Place Order' button, purchase complete alert)
+ * and access to the 'Place Order' modal window.
  */
 public class CartPage {
     private final Page page;
