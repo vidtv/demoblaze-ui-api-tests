@@ -1,3 +1,5 @@
+name: Demoblaze Playwright tests CI
+
 on:
   pull_request:
   workflow_dispatch:
@@ -36,10 +38,6 @@ jobs:
 
       - name: Generate Allure report
         run: mvn -q allure:report
-
-      # 🔍 Debug: list generated files
-      - name: Debug Allure report folder
-        run: ls -R target/site/allure-maven-plugin
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
