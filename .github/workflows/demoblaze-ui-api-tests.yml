@@ -36,6 +36,9 @@ jobs:
           PASSWORD: ${{ secrets.PASSWORD }}
         run: mvn test
 
+      - name: Debug Allure results
+        run: ls -R target/allure-results || echo "No results found"
+
       - name: Generate Allure report
         run: mvn -q allure:report
 
