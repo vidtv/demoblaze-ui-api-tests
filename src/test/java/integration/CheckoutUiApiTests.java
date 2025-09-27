@@ -46,10 +46,9 @@ public class CheckoutUiApiTests extends BaseTest {
             mainPage.loginAsTestUser();
         });
 
-        step("2. Open product page for 'Nexus 6' product and add it to cart", () -> {
-            productDetailsPage.openProductDetailsPage(nexusPhoneId);
-            page.waitForResponse("**/addtocart", () -> productDetailsPage.getAddToCartButton().click());
-        });
+        step("2. Open product page for 'Nexus 6' product and add it to cart", () ->
+                productDetailsPage.addProductToCartTestStep(nexusPhoneId)
+        );
 
         step("3. Open the cart page, click 'Place Order' button, populate required fields in the modal window, " +
                 "click 'Purchase' button and check that /deletecart method returned 200 status code", () -> {

@@ -24,7 +24,7 @@ public class LoginAndLogoutTests extends BaseTest {
     @Description("Verify successful login with valid credentials")
     public void successfulLoginAndLogoutTest() {
         step("1. Open the main page, click 'Log in' button and verify that login modal window is opened",
-                this::openLoginModalWindow
+                mainPage::openLoginModalWindow
         );
 
         step("2. Enter correct user credentials, click 'Log in' button " +
@@ -48,7 +48,7 @@ public class LoginAndLogoutTests extends BaseTest {
     @Description("Verify that there are error alerts in case of invalid login or password")
     public void loginWithIncorrectCredentialsTest() {
         step("1. Open the main page, click 'Log in' button and verify that login modal window is opened",
-                this::openLoginModalWindow
+                mainPage::openLoginModalWindow
         );
 
         step("2. Enter correct username and incorrect password, click 'Log in' button and verify that error alert appeared, " +
@@ -77,13 +77,5 @@ public class LoginAndLogoutTests extends BaseTest {
 
             assertThat(mainPage.getUsername()).isHidden();
         });
-    }
-
-    @Step
-    private void openLoginModalWindow() {
-        mainPage.navigate();
-        mainPage.getLoginButton().click();
-
-        assertThat(mainPage.loginModal.getLoginModalTitle()).isVisible();
     }
 }

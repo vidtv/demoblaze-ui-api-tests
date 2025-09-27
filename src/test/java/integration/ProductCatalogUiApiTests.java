@@ -108,7 +108,7 @@ public class ProductCatalogUiApiTests extends BaseTest {
                     EntriesResponse.Item.class);
 
             mainPage.navigate();
-            mainPage.selectProductByName(samsungPhoneName);
+            mainPage.getProductByName(samsungPhoneName).getProductItemName().click();
 
             assertThat(productDetailsPage.getProductName()).hasText(samsungPhoneInformation.title);
             assertEquals(String.valueOf(samsungPhoneInformation.getItemPrice()), productDetailsPage.getProductPrice());

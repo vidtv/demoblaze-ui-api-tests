@@ -1,5 +1,8 @@
 package utils;
 
+/**
+ * A class that holds constant values used throughout the project.
+ */
 public class Constants {
 
     public final static String BASE_URL = "https://www.demoblaze.com";

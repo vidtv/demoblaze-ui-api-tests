@@ -95,7 +95,7 @@ public class CheckoutTests extends BaseTest {
     @Step
     private void addProductToCartTestStep(String productName) {
         mainPage.navigate();
-        mainPage.selectProductByName(productName);
+        mainPage.getProductByName(productName).getProductItemName().click();
         page.waitForResponse("**/addtocart", () -> productDetailsPage.getAddToCartButton().click());
     }
 

@@ -92,7 +92,7 @@ public class ShoppingCartUiApiTests extends BaseTest {
                 }
             });
 
-            addProductToCartTestStep(nexusPhoneId);
+            productDetailsPage.addProductToCartTestStep(nexusPhoneId);
 
             assertEquals(200, addToCartStatusCode);
         });
@@ -137,7 +137,7 @@ public class ShoppingCartUiApiTests extends BaseTest {
         step("2. Open product details page for all of 'Nexus 6', 'Nokia lumia 1520' (id = 2) " +
                 "and 'Samsung galaxy s7' (id = 4) products and add each of them to the cart", () -> {
             for (var productId : productsIdList) {
-                addProductToCartTestStep(productId);
+                productDetailsPage.addProductToCartTestStep(productId);
             }
         });
 
@@ -159,7 +159,7 @@ public class ShoppingCartUiApiTests extends BaseTest {
         step("2. Open product details page for all of 'Nexus 6', 'Nokia lumia 1520' (id = 2) " +
                 "and 'Samsung galaxy s7' (id = 4) products and add each of them to the cart", () -> {
             for (var productId : productsIdList) {
-                addProductToCartTestStep(productId);
+                productDetailsPage.addProductToCartTestStep(productId);
             }
         });
 
@@ -176,12 +176,6 @@ public class ShoppingCartUiApiTests extends BaseTest {
                         "contains prod_ids of the same products that were added via UI",
                 this::verifyProdIdListsFromUiAndApi
         );
-    }
-
-    @Step
-    private void addProductToCartTestStep(int productId) {
-        productDetailsPage.openProductDetailsPage(productId);
-        page.waitForResponse("**/addtocart", () -> productDetailsPage.getAddToCartButton().click());
     }
 
     @Step
