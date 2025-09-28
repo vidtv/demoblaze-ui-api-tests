@@ -27,17 +27,17 @@ Test project for UI and API automation built with **Java**, **Playwright**, **Re
 4. Ensure Playwright dependencies are installed (e.g., npx playwright install or Maven plugin).
 
 ## Running Tests
-- To run all tests:
+To run all tests:
 - ```bash
    mvn test
    ```
   
 ## Generating Allure Reports
-- After running tests, generate the Allure report using:
-- ```bash
+After running tests, generate the Allure report using:
+```bash
    mvn allure:serve
    ```
-- This will start a local server and open the report in your default web browser.
+This will start a local server and open the report in your default web browser.
 
 ## CI/CD with GitHub Actions
 - The project is configured to run tests automatically on each pull request to the repository using GitHub Actions CI/CD.
