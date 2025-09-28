@@ -28,7 +28,7 @@ Test project for UI and API automation built with **Java**, **Playwright**, **Re
 
 ## Running Tests
 To run all tests:
-- ```bash
+```bash
    mvn test
    ```
   
