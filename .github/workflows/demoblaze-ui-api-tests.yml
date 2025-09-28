@@ -36,6 +36,9 @@ jobs:
           PASSWORD: ${{ secrets.PASSWORD }}
         run: mvn test
 
+      - name: Show Maven surefire results
+        run: cat target/surefire-reports/*.txt || echo "No surefire reports found"
+
       - name: Debug Allure results
         run: ls -R target/allure-results || echo "No results found"
 
