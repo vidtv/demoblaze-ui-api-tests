@@ -1,3 +1,5 @@
+name: Demoblaze Playwright tests CI
+
 on:
   pull_request:
   workflow_dispatch:
