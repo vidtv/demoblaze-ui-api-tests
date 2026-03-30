@@ -1,4 +1,4 @@
-Test project for UI and API automation built with **Java**, **Playwright**, **Rest Assured**, **JUnit5**, **Maven**, 
+Hybrid E2E Testing Framework built with **Java**, **Playwright**, **Rest Assured**, **JUnit5**, **Maven**, 
 **Allure Reporting**, and **GitHub Actions CI/CD**.
  
 ## Features
